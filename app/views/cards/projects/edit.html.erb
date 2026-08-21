@@ -1,0 +1,58 @@
+<% @page_title = "Project for #{@card.title}" %>
+
+<% content_for :header do %>
+  <div class="header__actions header__actions--start">
+    <%= back_link_to @card.title, card_path(@card), "keydown.left@document->hotkey#click keydown.esc@document->hotkey#click" %>
+  </div>
+
+  <h1 class="header__title divider divider--fade full-width" data-bridge--title-target="header">
+    <span class="overflow-ellipsis">Choose a project</span>
+  </h1>
+<% end %>
+
+<div class="panel panel--centered card-project-picker">
+  <header class="card-project-picker__header">
+    <h2 class="txt-large margin-none font-weight-black">Move this card to…</h2>
+    <p class="txt-subtle margin-none-block-end"><%= @card.title %></p>
+  </header>
+
+  <% if @projects.any? %>
+    <div class="card-project-picker__projects">
+      <% @projects.each do |project| %>
+        <section class="card-project-picker__project" style="--project-color: <%= project.color %>">
+          <h3 class="card-project-picker__project-name"><%= project.name %></h3>
+
+          <div class="card-project-picker__destinations">
+            <%= button_to card_project_path(@card), method: :patch,
+                  params: { card: { project_id: project.id, milestone_id: nil } },
+                  class: "card-project-picker__destination btn",
+                  aria: { current: ("true" if @card.project == project && @card.milestone.nil?) } do %>
+              <span>No milestone</span>
+              <%= icon_tag "check", class: "checked" %>
+            <% end %>
+
+            <% project.milestones.sort_by { |milestone| [ milestone.due_on, milestone.name.downcase ] }.each do |milestone| %>
+              <%= button_to card_project_path(@card), method: :patch,
+                    params: { card: { project_id: project.id, milestone_id: milestone.id } },
+                    class: "card-project-picker__destination btn",
+                    aria: { current: ("true" if @card.milestone == milestone) } do %>
+                <span><%= milestone.name %></span>
+                <time datetime="<%= milestone.due_on.iso8601 %>"><%= milestone.due_on.to_fs(:short) %></time>
+                <%= icon_tag "check", class: "checked" %>
+              <% end %>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="blank-slate">This board has no projects yet.</p>
+  <% end %>
+
+  <% if @card.project %>
+    <%= button_to card_project_path(@card), method: :delete, class: "btn txt-negative borderless txt-small center" do %>
+      <%= icon_tag "remove" %>
+      <span>Remove from project</span>
+    <% end %>
+  <% end %>
+</div>

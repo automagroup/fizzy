@@ -1,0 +1,11 @@
+<nav class="board-navigation" aria-label="<%= board.name %> views">
+  <%= link_to "Board", board_path(board),
+        class: "board-navigation__link",
+        aria: { current: ("page" if current == :board) } %>
+  <%= link_to "Projects", board_projects_path(board),
+        class: "board-navigation__link",
+        aria: { current: ("page" if current == :projects) } %>
+  <%= link_to "Calendar", board_calendar_path(board),
+        class: "board-navigation__link",
+        aria: { current: ("page" if current == :calendar) } %>
+</nav>

@@ -1,0 +1,68 @@
+<% @page_title = "#{@board.name} calendar" %>
+<% turbo_exempts_page_from_cache %>
+
+<%= turbo_stream_from @board %>
+
+<% content_for :header do %>
+  <h1 class="header__title divider divider--fade full-width" data-bridge--title-target="header">
+    <span class="overflow-ellipsis"><%= @board.name %></span>
+  </h1>
+<% end %>
+
+<%= render "boards/navigation", board: @board, current: :calendar %>
+
+<section class="calendar-page" aria-labelledby="calendar_month_heading">
+  <header class="calendar-page__header">
+    <div class="calendar-page__month-navigation">
+      <%= link_to board_calendar_path(@board, month: @month.prev_month.strftime("%Y-%m")),
+            class: "btn btn--circle txt-small",
+            title: @month.prev_month.strftime("%B %Y") do %>
+        <%= icon_tag "arrow-left" %>
+        <span class="for-screen-reader">Previous month</span>
+      <% end %>
+
+      <h2 id="calendar_month_heading" class="calendar-page__month margin-none">
+        <%= @month.strftime("%B %Y") %>
+      </h2>
+
+      <%= link_to board_calendar_path(@board, month: @month.next_month.strftime("%Y-%m")),
+            class: "btn btn--circle txt-small",
+            title: @month.next_month.strftime("%B %Y") do %>
+        <%= icon_tag "arrow-right" %>
+        <span class="for-screen-reader">Next month</span>
+      <% end %>
+    </div>
+
+    <%= link_to "Today", board_calendar_path(@board, month: Date.current.strftime("%Y-%m")), class: "btn txt-small" %>
+  </header>
+
+  <div class="calendar-grid-container">
+    <table class="calendar-grid">
+      <caption class="for-screen-reader"><%= @month.strftime("%B %Y") %> project delivery calendar</caption>
+      <thead>
+        <tr>
+          <% Date::ABBR_DAYNAMES.rotate(1).each do |day_name| %>
+            <th scope="col"><abbr title="<%= Date::DAYNAMES[Date::ABBR_DAYNAMES.index(day_name)] %>"><%= day_name %></abbr></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% @weeks.each do |week| %>
+          <tr>
+            <% week.each do |day| %>
+              <%= render "boards/calendars/day",
+                    day: day,
+                    month: @month,
+                    projects_by_date: @projects_by_date,
+                    milestones_by_date: @milestones_by_date %>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<%= render "boards/project_panel_host",
+      fallback_url: board_calendar_path(@board, month: @month.strftime("%Y-%m")),
+      direct: false %>

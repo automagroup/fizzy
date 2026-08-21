@@ -1,0 +1,23 @@
+website_redesign:
+  id: <%= ActiveRecord::FixtureSet.identify("website_redesign", :uuid) %>
+  account: 37s_uuid
+  board: writebook_uuid
+  name: Website redesign
+  due_on: 2026-08-28
+  color: "var(--color-card-5)"
+
+mobile_launch:
+  id: <%= ActiveRecord::FixtureSet.identify("mobile_launch", :uuid) %>
+  account: 37s_uuid
+  board: private_uuid
+  name: Mobile launch
+  due_on: 2026-09-15
+  color: "var(--color-card-6)"
+
+office_move:
+  id: <%= ActiveRecord::FixtureSet.identify("office_move", :uuid) %>
+  account: initech_uuid
+  board: miltons_wish_list_uuid
+  name: Office move
+  due_on: 2026-10-01
+  color: "var(--color-card-3)"

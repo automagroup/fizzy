@@ -6,6 +6,8 @@ class Board < ApplicationRecord
 
   has_rich_text :public_description
 
+  has_many :projects, dependent: :destroy
+  has_many :milestones, through: :projects
   has_many :tags, -> { distinct }, through: :cards
   has_many :events
   has_many :webhooks, dependent: :destroy

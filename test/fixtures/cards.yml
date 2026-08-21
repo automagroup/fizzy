@@ -4,6 +4,8 @@ logo:
   board: writebook_uuid
   creator: david_uuid
   column: writebook_triage_uuid
+  project: website_redesign_uuid
+  milestone: design_signoff_uuid
   title: The logo isn't big enough
   due_on: <%= 3.days.from_now %>
   created_at: <%= 1.week.ago %>
@@ -17,6 +19,7 @@ layout:
   board: writebook_uuid
   creator: david_uuid
   column: writebook_triage_uuid
+  project: website_redesign_uuid
   title: Layout is broken
   created_at: <%= 1.week.ago %>
   status: published
@@ -41,6 +44,8 @@ shipping:
   board: writebook_uuid
   creator: kevin_uuid
   column: writebook_triage_uuid
+  project: website_redesign_uuid
+  milestone: post_launch_fix_uuid
   title: We need to ship the app
   created_at: <%= 1.week.ago %>
   status: published

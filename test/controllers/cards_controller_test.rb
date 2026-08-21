@@ -56,6 +56,28 @@ class CardsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "create a draft in a project and milestone" do
+    post board_cards_path(boards(:writebook)), params: {
+      project_id: projects(:website_redesign).id,
+      milestone_id: milestones(:design_signoff).id
+    }
+
+    card = Card.last
+    assert_redirected_to card_draft_path(card)
+    assert_equal projects(:website_redesign), card.project
+    assert_equal milestones(:design_signoff), card.milestone
+    assert card.drafted?
+  end
+
+  test "create rejects milestone outside the project" do
+    post board_cards_path(boards(:writebook)), params: {
+      project_id: projects(:website_redesign).id,
+      milestone_id: milestones(:beta_release).id
+    }
+
+    assert_response :not_found
+  end
+
   test "show redirects to draft when card is drafted" do
     card = boards(:writebook).cards.create!(creator: users(:kevin), status: :drafted)
 
@@ -70,6 +92,17 @@ class CardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select "form[action=?] button[hidden]", card_self_assignment_path(card), text: "Assign to me"
+  end
+
+  test "show renders project and milestone badges" do
+    card = cards(:logo)
+
+    get card_path(card)
+
+    assert_response :success
+    assert_select ".card-project-badge--project", text: card.project.name
+    assert_select ".card-project-badge--milestone", text: card.milestone.name
+    assert_select ".card-project-badge__edit", text: "Change"
   end
 
   test "show renders inline code in title" do

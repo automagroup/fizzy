@@ -1,0 +1,8 @@
+<%= link_to board_project_milestone_path(milestone.board, milestone.project, milestone),
+      class: "calendar-event calendar-event--milestone",
+      style: "--project-color: #{milestone.color}",
+      title: "#{milestone.project.name}: #{milestone.name}",
+      aria: { label: "#{milestone.project.name}: #{milestone.name}" },
+      data: { turbo_frame: "project_panel", turbo_action: "advance" } do %>
+  <span class="calendar-event__name"><%= milestone.name %></span>
+<% end %>

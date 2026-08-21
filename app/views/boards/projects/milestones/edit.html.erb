@@ -1,0 +1,9 @@
+<% panel_content = render "boards/projects/milestones/form",
+      board: @board,
+      project: @project,
+      milestone: @milestone %>
+
+<%= render "boards/projects/shell",
+      board: @board,
+      page_title: "Edit #{@milestone.name}",
+      panel_content: panel_content %>

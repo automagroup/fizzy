@@ -11,8 +11,14 @@ class BoardsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show" do
+    cards(:logo).update!(column: nil)
+
     get board_path(boards(:writebook))
+
     assert_response :success
+    assert_select ".board-navigation__link[aria-current=page]", text: "Board"
+    assert_select "turbo-frame#project_panel"
+    assert_select ".card-project-badge--project[data-turbo-frame=project_panel]", text: projects(:website_redesign).name
   end
 
   test "invalidates page title cache when account updates" do

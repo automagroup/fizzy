@@ -1,0 +1,41 @@
+<% @page_title = "#{@board.name} projects" %>
+<% turbo_exempts_page_from_cache %>
+
+<%= turbo_stream_from @board %>
+
+<% content_for :header do %>
+  <h1 class="header__title divider divider--fade full-width" data-bridge--title-target="header">
+    <span class="overflow-ellipsis"><%= @board.name %></span>
+  </h1>
+
+  <div class="header__actions header__actions--end">
+    <%= link_to new_board_project_path(@board),
+          class: "btn btn--circle-mobile",
+          data: { turbo_frame: "project_panel", turbo_action: "advance" } do %>
+      <%= icon_tag "add" %>
+      <span>New project</span>
+    <% end %>
+  </div>
+<% end %>
+
+<%= render "boards/navigation", board: @board, current: :projects %>
+
+<section class="projects-page" aria-labelledby="projects_heading">
+  <header class="projects-page__header">
+    <div>
+      <h2 id="projects_heading" class="txt-x-large margin-none font-weight-black">Projects</h2>
+      <p class="txt-subtle margin-none-block-end">Track the work that has a delivery date.</p>
+    </div>
+  </header>
+
+  <%= render "boards/projects/list",
+        board: @board,
+        projects: @projects,
+        open_card_counts: @open_card_counts,
+        closed_card_counts: @closed_card_counts,
+        milestone_counts: @milestone_counts %>
+</section>
+
+<%= render "boards/project_panel_host",
+      fallback_url: board_projects_path(@board),
+      direct: false %>

@@ -1,0 +1,107 @@
+<% open_groups = project_cards_grouped_by_milestone(project_cards, closed: false) %>
+<% closed_groups = project_cards_grouped_by_milestone(project_cards, closed: true) %>
+<% open_count = open_groups.values.sum(&:size) %>
+<% closed_count = closed_groups.values.sum(&:size) %>
+
+<article class="project-panel__content" style="--project-color: <%= project.color %>">
+  <header class="project-panel__header">
+    <span class="project-panel__rail" aria-hidden="true"></span>
+
+    <div class="project-panel__heading">
+      <span class="project-panel__eyebrow">Project</span>
+      <h2 class="project-panel__title margin-none"><%= project.name %></h2>
+      <time class="project-panel__due" datetime="<%= project.due_on.iso8601 %>">
+        Due <%= project.due_on.to_fs(:long) %>
+      </time>
+    </div>
+
+    <div class="project-panel__header-actions">
+      <%= link_to edit_board_project_path(project.board, project),
+            class: "btn btn--circle borderless txt-x-small",
+            title: "Edit project" do %>
+        <%= icon_tag "pencil" %>
+        <span class="for-screen-reader">Edit <%= project.name %></span>
+      <% end %>
+
+      <button type="button" class="btn btn--circle borderless txt-x-small" title="Close project" data-action="dialog#close">
+        <%= icon_tag "close" %>
+        <span class="for-screen-reader">Close project</span>
+      </button>
+    </div>
+
+    <dl class="project-panel__summary">
+      <div><dt>Open cards</dt><dd><%= open_count %></dd></div>
+      <div><dt>Done</dt><dd><%= closed_count %></dd></div>
+      <div><dt>Milestones</dt><dd><%= milestones.size %></dd></div>
+    </dl>
+  </header>
+
+  <div class="project-panel__body"
+      data-controller="scroll-to"
+      data-action="dialog:show@document->scroll-to#scroll">
+    <section class="project-panel__cards" aria-labelledby="project_cards_heading">
+      <header class="project-panel__section-heading">
+        <h3 id="project_cards_heading" class="txt-large margin-none font-weight-black">Cards</h3>
+        <%= link_to new_board_project_milestone_path(project.board, project), class: "btn txt-small" do %>
+          <%= icon_tag "add" %>
+          <span>Milestone</span>
+        <% end %>
+      </header>
+
+      <div class="project-card-groups">
+        <% milestones.each do |milestone| %>
+          <%= render "boards/projects/card_group",
+                project: project,
+                milestone: milestone,
+                cards: open_groups.fetch(milestone.id, []),
+                selected_milestone: selected_milestone,
+                show_controls: true,
+                render_empty: true %>
+        <% end %>
+
+        <%= render "boards/projects/card_group",
+              project: project,
+              milestone: nil,
+              cards: open_groups.fetch(nil, []),
+              selected_milestone: selected_milestone,
+              show_controls: true,
+              render_empty: true %>
+      </div>
+    </section>
+
+    <% if closed_count.positive? %>
+      <details class="project-panel__done">
+        <summary>
+          <span>Done</span>
+          <span class="project-panel__done-count"><%= closed_count %></span>
+        </summary>
+
+        <div class="project-card-groups project-card-groups--done">
+          <% milestones.each do |milestone| %>
+            <% cards = closed_groups.fetch(milestone.id, []) %>
+            <% if cards.any? %>
+              <%= render "boards/projects/card_group",
+                    project: project,
+                    milestone: milestone,
+                    cards: cards,
+                    selected_milestone: nil,
+                    show_controls: false,
+                    render_empty: false %>
+            <% end %>
+          <% end %>
+
+          <% cards = closed_groups.fetch(nil, []) %>
+          <% if cards.any? %>
+            <%= render "boards/projects/card_group",
+                  project: project,
+                  milestone: nil,
+                  cards: cards,
+                  selected_milestone: nil,
+                  show_controls: false,
+                  render_empty: false %>
+          <% end %>
+        </div>
+      </details>
+    <% end %>
+  </div>
+</article>

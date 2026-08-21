@@ -284,9 +284,12 @@ class Account::ImportTest < ActiveSupport::TestCase
       {
         name: account.name,
         board_count: Board.where(account: account).count,
+        project_data: Project.where(account: account).order(:id).pluck(:board_id, :name, :due_on, :color),
+        milestone_data: Milestone.where(account: account).order(:id).pluck(:project_id, :name, :due_on),
         column_count: Column.where(account: account).count,
         column_colors: Column.where(account: account).order(:id).pluck(:color),
         card_count: Card.where(account: account).count,
+        card_planning: Card.where(account: account).order(:id).pluck(:board_id, :project_id, :milestone_id),
         comment_count: Comment.where(account: account).count,
         tag_count: Tag.where(account: account).count
       }

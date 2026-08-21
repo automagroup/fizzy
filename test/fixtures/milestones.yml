@@ -1,0 +1,27 @@
+design_signoff:
+  id: <%= ActiveRecord::FixtureSet.identify("design_signoff", :uuid) %>
+  account: 37s_uuid
+  project: website_redesign_uuid
+  name: Design sign-off
+  due_on: 2026-08-24
+
+post_launch_fix:
+  id: <%= ActiveRecord::FixtureSet.identify("post_launch_fix", :uuid) %>
+  account: 37s_uuid
+  project: website_redesign_uuid
+  name: Post-launch fix
+  due_on: 2026-09-02
+
+beta_release:
+  id: <%= ActiveRecord::FixtureSet.identify("beta_release", :uuid) %>
+  account: 37s_uuid
+  project: mobile_launch_uuid
+  name: Beta release
+  due_on: 2026-09-05
+
+office_keys:
+  id: <%= ActiveRecord::FixtureSet.identify("office_keys", :uuid) %>
+  account: initech_uuid
+  project: office_move_uuid
+  name: Receive office keys
+  due_on: 2026-09-25

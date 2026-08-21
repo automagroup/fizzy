@@ -7,6 +7,8 @@ module Card::Exportable
       number: number,
       title: title,
       board: board.name,
+      project: export_delivery(project),
+      milestone: export_delivery(milestone),
       status: export_status,
       creator: export_user(creator),
       description: export_html(description),
@@ -60,6 +62,16 @@ module Card::Exportable
         name: user.name,
         email: user.identity&.email_address
       }
+    end
+
+    def export_delivery(delivery)
+      if delivery
+        {
+          id: delivery.id,
+          name: delivery.name,
+          due_on: delivery.due_on.iso8601
+        }
+      end
     end
 
     def export_attachment_path(blob)

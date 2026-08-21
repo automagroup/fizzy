@@ -1,0 +1,26 @@
+<% open_count = open_card_counts.fetch(project.id, 0) %>
+<% closed_count = closed_card_counts.fetch(project.id, 0) %>
+<% milestone_count = milestone_counts.fetch(project.id, 0) %>
+
+<li class="project-list__item" style="--project-color: <%= project.color %>">
+  <%= link_to board_project_path(project.board, project),
+        class: "project-list__link",
+        data: { turbo_frame: "project_panel", turbo_action: "advance" } do %>
+    <span class="project-list__rail" aria-hidden="true"></span>
+
+    <span class="project-list__identity">
+      <strong class="project-list__name"><%= project.name %></strong>
+      <time class="project-list__due" datetime="<%= project.due_on.iso8601 %>">
+        Due <%= project.due_on.to_fs(:long) %>
+      </time>
+    </span>
+
+    <span class="project-list__counts" aria-label="<%= pluralize(open_count, "open card") %>, <%= pluralize(closed_count, "completed card") %>, <%= pluralize(milestone_count, "milestone") %>">
+      <span><strong><%= open_count %></strong> open</span>
+      <span><strong><%= closed_count %></strong> done</span>
+      <span><strong><%= milestone_count %></strong> milestones</span>
+    </span>
+
+    <%= icon_tag "arrow-right", class: "project-list__arrow" %>
+  <% end %>
+</li>

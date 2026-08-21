@@ -1,0 +1,10 @@
+<% panel_content = render "boards/projects/panel",
+      project: @project,
+      milestones: @milestones,
+      project_cards: @project_cards,
+      selected_milestone: @selected_milestone %>
+
+<%= render "boards/projects/shell",
+      board: @board,
+      page_title: "#{@project.name}: #{@milestone.name}",
+      panel_content: panel_content %>

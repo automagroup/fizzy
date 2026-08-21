@@ -1,0 +1,34 @@
+<% editable = local_assigns.fetch(:editable, false) %>
+<% compact = local_assigns.fetch(:compact, false) %>
+<% project_panel = local_assigns.fetch(:project_panel, false) %>
+<% link_data = project_panel ? { turbo_frame: "project_panel", turbo_action: "advance" } : { turbo_frame: "_top" } %>
+
+<% if card.project || editable %>
+  <div class="card-project-badges <%= "card-project-badges--compact" if compact %>"
+      style="--project-color: <%= card.project&.color || Project::Colored::DEFAULT_COLOR %>">
+    <% if card.project %>
+      <%= link_to board_project_path(card.board, card.project),
+            class: "card-project-badge card-project-badge--project",
+            data: link_data do %>
+        <span class="card-project-badge__marker" aria-hidden="true"></span>
+        <span class="overflow-ellipsis"><%= card.project.name %></span>
+      <% end %>
+
+      <% if card.milestone %>
+        <%= link_to board_project_milestone_path(card.board, card.project, card.milestone),
+              class: "card-project-badge card-project-badge--milestone",
+              title: "#{card.project.name}: #{card.milestone.name}",
+              aria: { label: "#{card.project.name}: #{card.milestone.name}" },
+              data: link_data do %>
+          <span class="overflow-ellipsis"><%= card.milestone.name %></span>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% if editable %>
+      <%= link_to edit_card_project_path(card), class: "card-project-badge__edit" do %>
+        <%= card.project ? "Change" : "Add to project" %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

@@ -7,8 +7,10 @@ class Cards::PublishesController < ApplicationController
     respond_to do |format|
       format.html do
         if add_another_param?
-          card = @board.cards.create!(status: :drafted)
+          card = Current.user.draft_new_card_in(@board, project: @card.project, milestone: @card.milestone)
           redirect_to card_draft_path(card), notice: "Card added"
+        elsif @card.project
+          redirect_to board_project_path(@board, @card.project), notice: "Card added"
         else
           redirect_to @card.board
         end

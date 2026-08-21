@@ -150,6 +150,16 @@ class Account::DataTransfer::RecordSet
       raise IntegrityError, e.message
     end
 
+    def load_archive_record(associated_model, id)
+      file_path = "data/#{associated_model.table_name}/#{id}.json"
+
+      unless zip.exists?(file_path)
+        raise IntegrityError, "#{model} record references missing #{associated_model} with ID #{id}"
+      end
+
+      load(file_path)
+    end
+
     def model_dir
       model.table_name
     end

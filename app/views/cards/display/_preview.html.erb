@@ -35,6 +35,7 @@
 
     <div class="card__body justify-space-between">
       <div class="card__content">
+        <%= render "cards/display/project_badges", card: card, compact: true, project_panel: local_assigns.fetch(:project_panel, false) %>
         <h3 class="card__title overflow-line-clamp">
           <%= card_html_title(card) %>
         </h3>

@@ -9,7 +9,7 @@ module Card::Broadcastable
 
   private
     def remember_if_preview_changed
-      @preview_changed ||= title_changed? || column_id_changed? || board_id_changed?
+      @preview_changed ||= title_changed? || column_id_changed? || board_id_changed? || project_id_changed? || milestone_id_changed?
     end
 
     def preview_changed?

@@ -1,0 +1,50 @@
+<% selected = milestone.present? && milestone == selected_milestone %>
+<% group_id = milestone ? dom_id(milestone) : dom_id(project, :no_milestone) %>
+
+<section id="<%= group_id %>"
+    class="project-card-group <%= "project-card-group--no-milestone" unless milestone %> <%= "project-card-group--selected" if selected %>"<% if selected %> data-scroll-to-target="target"<% end %>>
+  <header class="project-card-group__header">
+    <div class="project-card-group__identity">
+      <span class="project-card-group__marker" aria-hidden="true"></span>
+      <div>
+        <h4 class="project-card-group__name margin-none"><%= milestone&.name || "No milestone" %></h4>
+        <% if milestone %>
+          <time class="project-card-group__due" datetime="<%= milestone.due_on.iso8601 %>">
+            Due <%= milestone.due_on.to_fs(:long) %>
+          </time>
+        <% else %>
+          <span class="project-card-group__due">Cards without an intermediate delivery</span>
+        <% end %>
+      </div>
+    </div>
+
+    <% if show_controls && milestone %>
+      <%= link_to edit_board_project_milestone_path(project.board, project, milestone),
+            class: "btn btn--circle borderless txt-x-small",
+            title: "Edit #{milestone.name}" do %>
+        <%= icon_tag "pencil" %>
+        <span class="for-screen-reader">Edit <%= milestone.name %></span>
+      <% end %>
+    <% end %>
+  </header>
+
+  <% if cards.any? %>
+    <ul class="project-panel-cards">
+      <%= render partial: "boards/projects/card", collection: cards %>
+    </ul>
+  <% elsif render_empty %>
+    <p class="project-card-group__empty">No cards here yet.</p>
+  <% end %>
+
+  <% if show_controls %>
+    <div class="project-card-group__actions">
+      <%= button_to board_cards_path(project.board), method: :post,
+            params: { project_id: project.id, milestone_id: milestone&.id },
+            class: "btn btn--link txt-small",
+            form: { data: { turbo_frame: "_top" } } do %>
+        <%= icon_tag "add" %>
+        <span>New card</span>
+      <% end %>
+    </div>
+  <% end %>
+</section>

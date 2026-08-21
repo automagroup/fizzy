@@ -1,1 +1,4 @@
-<%= render partial: "cards/display/preview", collection: cards, as: :card, locals: { draggable: local_assigns.fetch(:draggable, false) }, cached: true %>
+<% project_panel = local_assigns.fetch(:project_panel, false) %>
+<%= render partial: "cards/display/preview", collection: cards, as: :card,
+      locals: { draggable: local_assigns.fetch(:draggable, false), project_panel: project_panel },
+      cached: ->(card) { [ card, project_panel ] } %>

@@ -46,11 +46,15 @@ class User::DataExportTest < ActiveSupport::TestCase
       json_files = reader.select { |e| e.filename.end_with?(".json") }
       assert json_files.any?, "Zip should contain at least one JSON file"
 
-      extractor = json_files.first.extractor_from(temp)
-      json_content = JSON.parse(extractor.extract)
+      logo_file = json_files.find { |entry| entry.filename == "#{cards(:logo).number}.json" }
+      assert logo_file, "Zip should contain the logo card JSON file"
+
+      json_content = JSON.parse(logo_file.extractor_from(temp).extract)
       assert json_content.key?("number")
       assert json_content.key?("title")
       assert json_content.key?("board")
+      assert_equal projects(:website_redesign).id, json_content.dig("project", "id")
+      assert_equal milestones(:design_signoff).id, json_content.dig("milestone", "id")
       assert json_content.key?("creator")
       assert json_content["creator"].key?("id")
       assert json_content["creator"].key?("name")
