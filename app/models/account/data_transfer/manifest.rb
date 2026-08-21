@@ -29,15 +29,19 @@ class Account::DataTransfer::Manifest
         *record_sets_for(
           ::User::Settings,
           ::Tag,
-          ::Board,
-          ::Column
+          ::Board
         ),
+        Account::DataTransfer::ProjectRecordSet.new(account),
+        Account::DataTransfer::MilestoneRecordSet.new(account),
+        record_set_for(::Column),
         Account::DataTransfer::EntropyRecordSet.new(account),
         *record_sets_for(
           ::Board::Publication,
           ::Webhook,
-          ::Access,
-          ::Card,
+          ::Access
+        ),
+        Account::DataTransfer::CardRecordSet.new(account),
+        *record_sets_for(
           ::Comment,
           ::Step,
           ::Assignment,

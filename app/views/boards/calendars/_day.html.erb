@@ -1,0 +1,14 @@
+<% in_month = day.month == month.month && day.year == month.year %>
+<% today = day == Date.current %>
+
+<td class="calendar-day <%= "calendar-day--outside" unless in_month %> <%= "calendar-day--today" if today %>"
+    data-date="<%= day.iso8601 %>">
+  <time class="calendar-day__number" datetime="<%= day.iso8601 %>" aria-label="<%= day.to_fs(:long) %>">
+    <%= day.day %>
+  </time>
+
+  <div class="calendar-day__events">
+    <%= render partial: "boards/calendars/project", collection: projects_by_date.fetch(day, []) %>
+    <%= render partial: "boards/calendars/milestone", collection: milestones_by_date.fetch(day, []) %>
+  </div>
+</td>

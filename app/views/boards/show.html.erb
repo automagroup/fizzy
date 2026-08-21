@@ -18,6 +18,8 @@
   </div>
 <% end %>
 
+<%= render "boards/navigation", board: @board, current: :board %>
+
 <%= render "filters/settings", filter_url: board_path(@board), user_filtering: @user_filtering, no_filtering_url: board_path(@board) do |form| %>
   <%= hidden_field_tag "board_ids[]", @board.id %>
 <% end %>
@@ -30,5 +32,9 @@
     <%= render "boards/show/columns", page: @page, board: @board %>
   <% end %>
 <% end %>
+
+<%= render "boards/project_panel_host",
+      fallback_url: board_path(@board),
+      direct: false %>
 
 <%= bridged_share_url_button(bridge_share_board_description(@board)) %>

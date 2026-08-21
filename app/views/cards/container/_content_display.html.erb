@@ -1,3 +1,5 @@
+<%= render "cards/display/project_badges", card: card, editable: true %>
+
 <h1 class="card__title flex align-start gap-half">
   <%= link_to card_html_title(card), edit_card_path(card), class: "card__title-link" %>
 </h1>

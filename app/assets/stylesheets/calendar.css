@@ -1,0 +1,178 @@
+@layer components {
+  .calendar-page {
+    inline-size: min(var(--main-width), 100%);
+    margin-inline: auto;
+    padding-block: clamp(1.25rem, 3vw, 2.5rem);
+    text-align: start;
+  }
+
+  .calendar-page__header {
+    align-items: center;
+    display: flex;
+    gap: var(--inline-space);
+    justify-content: space-between;
+    margin-block-end: var(--block-space);
+  }
+
+  .calendar-page__month-navigation {
+    align-items: center;
+    display: grid;
+    gap: var(--inline-space);
+    grid-template-columns: auto minmax(10rem, auto) auto;
+  }
+
+  .calendar-page__month {
+    font-size: var(--text-x-large);
+    font-weight: 900;
+    text-align: center;
+  }
+
+  .calendar-grid-container {
+    inline-size: 100%;
+    max-inline-size: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+  }
+
+  .calendar-grid {
+    border-collapse: separate;
+    border-spacing: 0;
+    inline-size: 100%;
+    min-inline-size: 52rem;
+    table-layout: fixed;
+
+    th {
+      border-block-end: 1px solid var(--color-ink-light);
+      color: var(--color-ink-dark);
+      font-size: var(--text-x-small);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      padding: 0.55rem;
+      text-align: start;
+      text-transform: uppercase;
+
+      abbr {
+        text-decoration: none;
+      }
+    }
+
+    tbody tr:last-child .calendar-day {
+      border-block-end: 1px solid var(--color-ink-lighter);
+    }
+  }
+
+  .calendar-day {
+    block-size: 9rem;
+    border-inline-end: 1px solid var(--color-ink-lighter);
+    border-block-start: 1px solid var(--color-ink-lighter);
+    padding: 0.45rem;
+    vertical-align: top;
+
+    &:first-child {
+      border-inline-start: 1px solid var(--color-ink-lighter);
+    }
+  }
+
+  .calendar-day--outside {
+    background-color: color-mix(in srgb, var(--color-ink-lightest) 55%, var(--color-canvas));
+
+    .calendar-day__number {
+      color: var(--color-ink-medium);
+    }
+  }
+
+  .calendar-day__number {
+    color: var(--color-ink-dark);
+    display: inline-grid;
+    font-size: var(--text-x-small);
+    font-weight: 800;
+    min-block-size: 1.6rem;
+    min-inline-size: 1.6rem;
+    place-items: center;
+  }
+
+  .calendar-day--today .calendar-day__number {
+    background-color: var(--color-ink);
+    border-radius: 0.3rem;
+    color: var(--color-ink-inverted);
+  }
+
+  .calendar-day__events {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-block-start: 0.25rem;
+  }
+
+  .calendar-event {
+    align-items: center;
+    border-radius: 0.25rem;
+    color: color-mix(in srgb, var(--project-color) 74%, var(--color-ink));
+    display: flex;
+    font-size: var(--text-x-small);
+    font-weight: 700;
+    gap: 0.35rem;
+    line-height: 1.2;
+    min-block-size: 1.75rem;
+    padding: 0.3rem 0.4rem;
+    text-decoration: none;
+
+    @media (any-hover: hover) {
+      &:hover {
+        filter: brightness(0.9);
+      }
+    }
+  }
+
+  .calendar-event--project {
+    background-color: color-mix(in srgb, var(--project-color) 16%, var(--color-canvas));
+    border-inline-start: 3px solid var(--project-color);
+  }
+
+  .calendar-event--milestone {
+    border: 1px solid color-mix(in srgb, var(--project-color) 38%, var(--color-ink-lighter));
+    border-inline-start-width: 3px;
+  }
+
+  .calendar-event__marker {
+    background-color: var(--project-color);
+    block-size: 0.45rem;
+    flex: 0 0 auto;
+    inline-size: 0.45rem;
+  }
+
+  .calendar-event__name {
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  @media (max-width: 639px) {
+    .calendar-page {
+      padding-block: var(--block-space);
+    }
+
+    .calendar-page__header {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .calendar-page__month-navigation {
+      grid-template-columns: auto 1fr auto;
+    }
+
+    .calendar-page__header > .btn {
+      align-self: center;
+    }
+
+    .calendar-grid {
+      min-inline-size: 46rem;
+    }
+
+    .calendar-day {
+      block-size: 7.5rem;
+    }
+  }
+}

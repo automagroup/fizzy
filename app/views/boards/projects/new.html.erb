@@ -1,0 +1,6 @@
+<% panel_content = render "boards/projects/form", board: @board, project: @project %>
+
+<%= render "boards/projects/shell",
+      board: @board,
+      page_title: "New project",
+      panel_content: panel_content %>

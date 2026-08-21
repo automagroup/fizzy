@@ -13,6 +13,8 @@ class User::DataExport < Export
     def exportable_cards
       user.accessible_cards.includes(
         :board,
+        :project,
+        :milestone,
         creator: :identity,
         comments: { creator: :identity },
         rich_text_description: { embeds_attachments: :blob }

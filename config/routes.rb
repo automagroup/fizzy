@@ -32,6 +32,13 @@ Rails.application.routes.draw do
       resource :involvement
       resource :publication
       resource :entropy
+      resource :calendar, only: :show
+
+      resources :projects do
+        scope module: :projects do
+          resources :milestones, except: :index
+        end
+      end
 
       namespace :columns do
         resource :not_now
@@ -88,6 +95,7 @@ Rails.application.routes.draw do
       resource :image
       resource :not_now
       resource :pin
+      resource :project, only: %i[ edit update destroy ]
       resource :publish
       resource :reading
       resource :triage

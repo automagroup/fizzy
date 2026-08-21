@@ -1,0 +1,18 @@
+<% if projects.any? %>
+  <ol class="project-list">
+    <%= render partial: "boards/projects/project", collection: projects,
+          locals: {
+            open_card_counts: open_card_counts,
+            closed_card_counts: closed_card_counts,
+            milestone_counts: milestone_counts
+          } %>
+  </ol>
+<% else %>
+  <div class="projects-blank-slate blank-slate">
+    <strong>No projects yet.</strong>
+    <span>Projects group cards around a delivery date.</span>
+    <%= link_to "Create the first project", new_board_project_path(board),
+          class: "btn btn--link txt-small",
+          data: { turbo_frame: "project_panel", turbo_action: "advance" } %>
+  </div>
+<% end %>

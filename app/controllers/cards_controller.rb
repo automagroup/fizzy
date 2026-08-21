@@ -15,7 +15,7 @@ class CardsController < ApplicationController
   def create
     respond_to do |format|
       format.html do
-        card = Current.user.draft_new_card_in(@board)
+        card = Current.user.draft_new_card_in(@board, project: card_project, milestone: card_milestone)
         redirect_to card_draft_path(card)
       end
 
@@ -65,6 +65,20 @@ class CardsController < ApplicationController
 
     def ensure_permission_to_administer_card
       head :forbidden unless Current.user.can_administer_card?(@card)
+    end
+
+    def card_project
+      @card_project ||= @board.projects.find(params[:project_id]) if params[:project_id].present?
+    end
+
+    def card_milestone
+      if params[:milestone_id].present?
+        unless card_project
+          raise ActiveRecord::RecordNotFound
+        end
+
+        card_project.milestones.find(params[:milestone_id])
+      end
     end
 
     def card_params

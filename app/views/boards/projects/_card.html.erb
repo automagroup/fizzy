@@ -1,0 +1,8 @@
+<li class="project-panel-card">
+  <%= link_to card_path(card), class: "project-panel-card__link", data: { turbo_frame: "_top" } do %>
+    <span class="project-panel-card__number">No. <%= card.number %></span>
+    <strong class="project-panel-card__title overflow-ellipsis"><%= card.title %></strong>
+    <span class="project-panel-card__stage"><%= project_card_stage(card) %></span>
+    <%= icon_tag "arrow-right", class: "project-panel-card__arrow" %>
+  <% end %>
+</li>

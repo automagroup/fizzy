@@ -11,9 +11,15 @@ module User::Accessor
     after_create_commit :grant_access_to_boards, unless: :system?
   end
 
-  def draft_new_card_in(board)
+  def draft_new_card_in(board, project: nil, milestone: nil)
     board.cards.find_or_initialize_by(creator: self, status: "drafted").tap do |card|
-      card.update!(created_at: Time.current, updated_at: Time.current, last_active_at: Time.current)
+      card.update!(
+        project: project,
+        milestone: milestone,
+        created_at: Time.current,
+        updated_at: Time.current,
+        last_active_at: Time.current
+      )
     end
   end
 

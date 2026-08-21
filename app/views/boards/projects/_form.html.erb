@@ -1,0 +1,67 @@
+<article class="project-panel__content project-panel__content--form" style="--project-color: <%= project.color %>">
+  <header class="project-panel__form-header">
+    <div>
+      <span class="project-panel__eyebrow"><%= project.new_record? ? "New project" : "Edit project" %></span>
+      <h2 class="project-panel__title margin-none"><%= project.new_record? ? "Plan a delivery" : project.name %></h2>
+    </div>
+
+    <% if project.persisted? %>
+      <%= link_to board_project_path(board, project),
+            class: "btn btn--circle borderless txt-x-small",
+            title: "Back to project details",
+            data: { turbo_frame: "project_panel", turbo_action: "replace" } do %>
+        <%= icon_tag "close" %>
+        <span class="for-screen-reader">Back to project details</span>
+      <% end %>
+    <% else %>
+      <button type="button" class="btn btn--circle borderless txt-x-small" title="Close" data-action="dialog#close">
+        <%= icon_tag "close" %>
+        <span class="for-screen-reader">Close</span>
+      </button>
+    <% end %>
+  </header>
+
+  <%= form_with model: [ board, project ], class: "project-form",
+        data: { turbo_action: ("replace" if project.new_record?) } do |form| %>
+    <label class="project-form__field">
+      <span>Name</span>
+      <%= form.text_field :name, required: true, autofocus: true, autocomplete: "off", class: "input", placeholder: "Website redesign" %>
+    </label>
+
+    <label class="project-form__field">
+      <span>Delivery date</span>
+      <%= form.date_field :due_on, required: true, class: "input" %>
+    </label>
+
+    <fieldset class="project-form__colors">
+      <legend>Color</legend>
+      <div class="color-picker__colors">
+        <% Color::COLORS.each do |color| %>
+          <label class="btn txt-small borderless" style="--btn-background: <%= color %>" title="<%= color.name %>">
+            <%= form.radio_button :color, color.value,
+                  checked: (project.color == color || (project.new_record? && color == Project::Colored::DEFAULT_COLOR)) %>
+            <%= icon_tag "check", class: "checked" %>
+            <span class="for-screen-reader"><%= color.name %></span>
+          </label>
+        <% end %>
+      </div>
+    </fieldset>
+
+    <div class="project-form__actions">
+      <button type="button" class="btn" data-action="dialog#close">Cancel</button>
+      <%= form.submit project.new_record? ? "Create project" : "Save changes", class: "btn btn--link" %>
+    </div>
+  <% end %>
+
+  <% if project.persisted? %>
+    <div class="project-form__danger">
+      <%= button_to board_project_path(board, project), method: :delete,
+            class: "btn txt-negative borderless txt-small",
+            data: { turbo_confirm: "Delete this project? Its cards will stay on the board without a project." },
+            form: { data: { turbo_frame: "_top" } } do %>
+        <%= icon_tag "trash" %>
+        <span>Delete project</span>
+      <% end %>
+    </div>
+  <% end %>
+</article>

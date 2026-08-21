@@ -4,6 +4,10 @@ export default class extends Controller {
   static targets = [ "target" ]
 
   connect() {
+    this.scroll()
+  }
+
+  scroll() {
     this.#scrollTargetIntoView()
   }
 

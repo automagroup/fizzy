@@ -1,0 +1,18 @@
+<% @page_title = page_title %>
+<% turbo_exempts_page_from_cache %>
+
+<%= turbo_stream_from board %>
+
+<% content_for :header do %>
+  <h1 class="header__title divider divider--fade full-width" data-bridge--title-target="header">
+    <span class="overflow-ellipsis"><%= board.name %></span>
+  </h1>
+<% end %>
+
+<%= render "boards/navigation", board: board, current: :projects %>
+<div class="projects-page projects-page--panel-open" aria-hidden="true"></div>
+
+<%= render "boards/project_panel_host",
+      fallback_url: board_projects_path(board),
+      direct: true,
+      content: panel_content %>

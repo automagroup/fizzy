@@ -1,0 +1,19 @@
+<%= tag.div id: "project_panel_host",
+      data: {
+        controller: "dialog project-panel",
+        action: "turbo:frame-load->project-panel#open dialog:close->project-panel#restoreLocation",
+        dialog_auto_open_value: direct,
+        dialog_modal_value: true,
+        project_panel_direct_value: direct,
+        project_panel_fallback_url_value: fallback_url
+      } do %>
+  <dialog class="project-panel dialog"
+      aria-label="Project details"
+      data-dialog-target="dialog"
+      data-project-panel-target="dialog"
+      data-action="click->project-panel#closeOnBackdrop cancel->project-panel#cancel turbo:before-morph-attribute->dialog#preventCloseOnMorphing">
+    <%= turbo_frame_tag :project_panel do %>
+      <%= local_assigns[:content] %>
+    <% end %>
+  </dialog>
+<% end %>
