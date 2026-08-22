@@ -2,10 +2,11 @@
 <% compact = local_assigns.fetch(:compact, false) %>
 <% project_panel = local_assigns.fetch(:project_panel, false) %>
 <% link_data = project_panel ? { turbo_frame: "project_panel", turbo_action: "advance" } : { turbo_frame: "_top" } %>
+<% picker_attributes = editable ? { id: dom_id(card, :project_badges) } : {} %>
 
 <% if card.project || editable %>
   <div class="card-project-badges <%= "card-project-badges--compact" if compact %>"
-      style="--project-color: <%= card.project&.color || Project::Colored::DEFAULT_COLOR %>">
+      style="--project-color: <%= card.project&.color || Project::Colored::DEFAULT_COLOR %>" <%= tag.attributes(picker_attributes) %>>
     <% if card.project %>
       <%= link_to board_project_path(card.board, card.project),
             class: "card-project-badge card-project-badge--project",
@@ -26,9 +27,28 @@
     <% end %>
 
     <% if editable %>
-      <%= link_to edit_card_project_path(card), class: "card-project-badge__edit" do %>
-        <%= card.project ? "Change" : "Add to project" %>
-      <% end %>
+      <div class="card-project-badge__picker"
+          data-controller="dialog"
+          data-action="keydown.esc->dialog#close click@document->dialog#closeOnClickOutside">
+        <%= link_to edit_card_project_path(card),
+              class: "card-project-badge__edit",
+              data: {
+                turbo_frame: "_top",
+                turbo_prefetch: false,
+                controller: "hotkey",
+                action: "click->dialog#open:prevent:stop keydown.r@document->hotkey#click"
+              },
+              aria: { haspopup: "dialog", controls: dom_id(card, :project_picker_dialog) } do %>
+          <%= card.project ? "Change" : "Add to project" %>
+        <% end %>
+
+        <dialog id="<%= dom_id(card, :project_picker_dialog) %>" class="popup popup--align-right panel flex-column align-start justify-start fill-white shadow txt-small"
+            aria-label="Choose a project"
+            data-dialog-target="dialog"
+            data-action="turbo:before-morph-attribute->dialog#preventCloseOnMorphing turbo:submit-end->dialog#close">
+          <%= turbo_frame_tag card, :project_picker, src: edit_card_project_path(card), loading: :lazy, refresh: :morph %>
+        </dialog>
+      </div>
     <% end %>
   </div>
 <% end %>

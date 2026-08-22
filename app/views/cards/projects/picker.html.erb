@@ -1,0 +1,65 @@
+<%= turbo_frame_tag @card, :project_picker do %>
+  <%= tag.div class: "max-width full-width", data: {
+        action: "turbo:before-cache@document->dialog#close dialog:show@document->navigable-list#reset keydown->navigable-list#navigate filter:changed->navigable-list#reset",
+        controller: "filter navigable-list",
+        navigable_list_focus_on_selection_value: false,
+        navigable_list_actionable_items_value: true } do %>
+    <div class="flex align-start justify-space-between">
+      <%= filter_title "Move this card to…" %>
+      <kbd class="txt-xx-small hide-on-touch">r</kbd>
+    </div>
+
+    <%= text_field_tag :search, nil, placeholder: "Filter…", class: "input input--transparent txt-small margin-block-half", autofocus: true,
+          type: "search", autocorrect: "off", autocomplete: "off", aria: { label: "Filter projects and milestones" },
+          data: { "1p-ignore": "true", filter_target: "input", dialog_target: "focusMouse", action: "input->filter#filter" } %>
+
+    <% if @projects.any? %>
+      <ul class="popup__list" data-filter-target="list" role="radiogroup" aria-label="Project destinations">
+        <% @projects.each do |project| %>
+          <li class="popup__item" data-filter-target="item" data-navigable-list-target="item" role="radio"
+              aria-checked="<%= @card.project_id == project.id && @card.milestone_id.nil? %>">
+            <% destination_label = "#{project.name} — No milestone" %>
+            <%= button_to card_project_path(@card, format: :turbo_stream), method: :patch,
+                  params: { card: { project_id: project.id, milestone_id: nil } },
+                  class: "popup__btn btn", form_class: "max-width flex-item-grow", title: destination_label do %>
+              <span class="overflow-ellipsis flex-item-grow">
+                <strong><%= project.name %></strong>
+                <span class="txt-subtle">— No milestone</span>
+              </span>
+              <%= icon_tag "check", size: 18, class: "checked flex-item-no-shrink flex-item-justify-end", style: "--icon-size: 1em" %>
+            <% end %>
+          </li>
+
+          <% project.milestones.sort_by { |milestone| [ milestone.due_on, milestone.name.downcase ] }.each do |milestone| %>
+            <li class="popup__item" data-filter-target="item" data-navigable-list-target="item" role="radio"
+                aria-checked="<%= @card.milestone_id == milestone.id %>">
+              <% destination_label = "#{project.name} — #{milestone.name}" %>
+              <%= button_to card_project_path(@card, format: :turbo_stream), method: :patch,
+                    params: { card: { project_id: project.id, milestone_id: milestone.id } },
+                    class: "popup__btn btn", form_class: "max-width flex-item-grow", title: destination_label do %>
+                <span class="overflow-ellipsis flex-item-grow">
+                  <strong><%= project.name %></strong>
+                  <span class="txt-subtle">— <%= milestone.name %></span>
+                </span>
+                <time class="txt-xx-small txt-subtle flex-item-no-shrink" datetime="<%= milestone.due_on.iso8601 %>"><%= milestone.due_on.to_fs(:short) %></time>
+                <%= icon_tag "check", size: 18, class: "checked flex-item-no-shrink flex-item-justify-end", style: "--icon-size: 1em" %>
+              <% end %>
+            </li>
+          <% end %>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="blank-slate">This board has no projects yet.</p>
+    <% end %>
+
+    <% if @card.project_id %>
+      <div class="popup__footer">
+        <%= button_to card_project_path(@card, format: :turbo_stream), method: :delete,
+              class: "btn txt-negative borderless txt-small center full-width" do %>
+          <%= icon_tag "remove" %>
+          <span>Remove from project</span>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

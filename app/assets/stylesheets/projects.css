@@ -573,6 +573,18 @@
     margin-block-end: 0.35rem;
   }
 
+  .card-project-badge__picker {
+    display: inline-flex;
+    position: relative;
+  }
+
+  .card-project-badges .card-project-badge__picker .popup {
+    inline-size: min(46rem, calc(100vw - var(--inline-space-double)));
+    inset-block-start: 100%;
+    max-inline-size: min(46rem, calc(100vw - var(--inline-space-double)));
+    min-inline-size: 0;
+  }
+
   .card-project-badge {
     align-items: center;
     border-radius: 0.25rem;

@@ -1,0 +1,1 @@
+<%= turbo_stream.replace([ @card, :project_badges ], partial: "cards/display/project_badges", method: "morph", locals: { card: @card, editable: true }) %>

@@ -2,7 +2,8 @@ class Cards::ProjectsController < ApplicationController
   include CardScoped
 
   def edit
-    @projects = @board.projects.chronologically.includes(:milestones)
+    @projects = @board.projects.chronologically.includes(:milestones).load
+    render :picker if turbo_frame_request?
   end
 
   def update
@@ -10,12 +11,20 @@ class Cards::ProjectsController < ApplicationController
     milestone = find_milestone(project)
 
     @card.assign_to_project project, milestone: milestone
-    redirect_to @card, notice: "Project updated"
+
+    respond_to do |format|
+      format.html { redirect_to @card, notice: "Project updated" }
+      format.turbo_stream { render :update }
+    end
   end
 
   def destroy
     @card.assign_to_project nil
-    redirect_to @card, notice: "Project removed"
+
+    respond_to do |format|
+      format.html { redirect_to @card, notice: "Project removed" }
+      format.turbo_stream { render :update }
+    end
   end
 
   private

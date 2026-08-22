@@ -26,6 +26,7 @@
             <%= button_to card_project_path(@card), method: :patch,
                   params: { card: { project_id: project.id, milestone_id: nil } },
                   class: "card-project-picker__destination btn",
+                  form: { data: { turbo: false } },
                   aria: { current: ("true" if @card.project == project && @card.milestone.nil?) } do %>
               <span>No milestone</span>
               <%= icon_tag "check", class: "checked" %>
@@ -35,6 +36,7 @@
               <%= button_to card_project_path(@card), method: :patch,
                     params: { card: { project_id: project.id, milestone_id: milestone.id } },
                     class: "card-project-picker__destination btn",
+                    form: { data: { turbo: false } },
                     aria: { current: ("true" if @card.milestone == milestone) } do %>
                 <span><%= milestone.name %></span>
                 <time datetime="<%= milestone.due_on.iso8601 %>"><%= milestone.due_on.to_fs(:short) %></time>
@@ -50,7 +52,7 @@
   <% end %>
 
   <% if @card.project %>
-    <%= button_to card_project_path(@card), method: :delete, class: "btn txt-negative borderless txt-small center" do %>
+    <%= button_to card_project_path(@card), method: :delete, class: "btn txt-negative borderless txt-small center", form: { data: { turbo: false } } do %>
       <%= icon_tag "remove" %>
       <span>Remove from project</span>
     <% end %>

@@ -105,6 +105,29 @@ class CardsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".card-project-badge__edit", text: "Change"
   end
 
+  test "show renders project picker link outside the edit frame" do
+    card = cards(:text)
+
+    get card_path(card)
+
+    assert_response :success
+    assert_select ".card-project-badges##{dom_id(card, :project_badges)}" do
+      assert_select ".card-project-badge__picker[data-controller=dialog]" do |pickers|
+        assert_includes pickers.first["data-action"], "keydown.esc->dialog#close"
+        assert_includes pickers.first["data-action"], "click@document->dialog#closeOnClickOutside"
+
+        assert_select ".card-project-badge__edit[data-turbo-frame=_top][data-turbo-prefetch=false][data-controller=hotkey][aria-haspopup=dialog]", text: "Add to project" do |links|
+          assert_equal edit_card_project_path(card), links.first["href"]
+          assert_equal dom_id(card, :project_picker_dialog), links.first["aria-controls"]
+          assert_includes links.first["data-action"], "keydown.r@document->hotkey#click"
+          assert_includes links.first["data-action"], "click->dialog#open"
+        end
+
+        assert_select "dialog.popup--align-right[aria-label='Choose a project'][data-dialog-target=dialog] turbo-frame##{dom_id(card, :project_picker)}[src=?][loading=lazy]", edit_card_project_path(card)
+      end
+    end
+  end
+
   test "show renders inline code in title" do
     card = cards(:logo)
     card.update_column :title, "Fix the `bug` in production"
