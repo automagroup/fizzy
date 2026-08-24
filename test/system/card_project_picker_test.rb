@@ -1,6 +1,38 @@
 require "application_system_test_case"
 
 class CardProjectPickerTest < ApplicationSystemTestCase
+  test "clicking after project badges opens the card" do
+    card = cards(:logo)
+    sign_in_as(users(:david))
+
+    visit board_url(card.board)
+    click_on card.column.name
+    assert_selector "##{dom_id(card, :article)}"
+
+    click_point = page.evaluate_script(<<~JS)
+      (() => {
+        const card = document.querySelector("##{dom_id(card, :article)}")
+        const badges = card.querySelectorAll(".card-project-badge")
+        const lastBadgeRect = badges[badges.length - 1].getBoundingClientRect()
+        const contentRect = card.querySelector(".card__content").getBoundingClientRect()
+
+        return {
+          x: Math.floor((lastBadgeRect.right + contentRect.right) / 2),
+          y: Math.floor(lastBadgeRect.top + lastBadgeRect.height / 2),
+          gap: contentRect.right - lastBadgeRect.right
+        }
+      })()
+    JS
+
+    assert_operator click_point.fetch("gap"), :>, 2
+    assert_equal "card__link", page.evaluate_script(<<~JS)
+      document.elementFromPoint(#{click_point.fetch("x")}, #{click_point.fetch("y")}).className
+    JS
+
+    page.driver.browser.action.move_to_location(click_point.fetch("x"), click_point.fetch("y")).click.perform
+    assert_current_path card_path(card)
+  end
+
   test "assigning and removing a project from the card picker" do
     card = cards(:text)
     project = projects(:website_redesign)
