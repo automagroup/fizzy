@@ -5,15 +5,17 @@ class Boards::CalendarsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as :kevin
   end
 
-  test "show renders a Monday-first month with projects and milestones" do
+  test "show renders a Sunday-first month with projects and milestones" do
     get board_calendar_path(boards(:writebook), month: "2026-08")
 
     assert_response :success
     assert_select ".board-navigation__link[aria-current=page]", text: "Calendar"
     assert_select "#calendar_month_heading", text: "August 2026"
-    assert_select ".calendar-grid thead th:first-child", text: "Mon"
-    assert_select ".calendar-grid thead th:last-child", text: "Sun"
+    assert_select ".calendar-grid thead th:first-child", text: "Sun"
+    assert_select ".calendar-grid thead th:last-child", text: "Sat"
     assert_select ".calendar-day", count: 42
+    assert_select ".calendar-grid tbody tr:first-child .calendar-day:first-child[data-date='2026-07-26']"
+    assert_select ".calendar-grid tbody tr:last-child .calendar-day:last-child[data-date='2026-09-05']"
     assert_select ".calendar-event--project", text: projects(:website_redesign).name
     assert_select ".calendar-event--milestone[title='Website redesign: Design sign-off']", text: milestones(:design_signoff).name
     assert_select ".calendar-event", text: cards(:logo).title, count: 0

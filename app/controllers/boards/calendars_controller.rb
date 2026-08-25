@@ -9,8 +9,8 @@ class Boards::CalendarsController < ApplicationController
       return
     end
 
-    @calendar_start = @month.beginning_of_week(:monday)
-    @calendar_end = @month.end_of_month.end_of_week(:monday)
+    @calendar_start = @month.beginning_of_week(:sunday)
+    @calendar_end = @month.end_of_month.end_of_week(:sunday)
     @weeks = (@calendar_start..@calendar_end).each_slice(7).to_a
 
     due_on = @month..@month.end_of_month

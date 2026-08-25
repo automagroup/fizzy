@@ -41,7 +41,7 @@
       <caption class="for-screen-reader"><%= @month.strftime("%B %Y") %> project delivery calendar</caption>
       <thead>
         <tr>
-          <% Date::ABBR_DAYNAMES.rotate(1).each do |day_name| %>
+          <% Date::ABBR_DAYNAMES.each do |day_name| %>
             <th scope="col"><abbr title="<%= Date::DAYNAMES[Date::ABBR_DAYNAMES.index(day_name)] %>"><%= day_name %></abbr></th>
           <% end %>
         </tr>
