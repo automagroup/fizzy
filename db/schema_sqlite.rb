@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_08_21_114029) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_24_160251) do
   create_table "accesses", id: :uuid, force: :cascade do |t|
     t.datetime "accessed_at"
     t.uuid "account_id", null: false
@@ -338,6 +338,13 @@ ActiveRecord::Schema[8.2].define(version: 2026_08_21_114029) do
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_filters_on_account_id"
     t.index ["creator_id", "params_digest"], name: "index_filters_on_creator_id_and_params_digest", unique: true
+  end
+
+  create_table "filters_projects", id: false, force: :cascade do |t|
+    t.uuid "filter_id", null: false
+    t.uuid "project_id", null: false
+    t.index ["filter_id"], name: "index_filters_projects_on_filter_id"
+    t.index ["project_id"], name: "index_filters_projects_on_project_id"
   end
 
   create_table "filters_tags", id: false, force: :cascade do |t|

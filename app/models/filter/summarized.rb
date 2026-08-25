@@ -1,9 +1,15 @@
 module Filter::Summarized
   def summary
-    [ index_summary, sort_summary, tag_summary, assignee_summary, creator_summary, terms_summary ].compact.to_sentence
+    [ index_summary, sort_summary, project_summary, tag_summary, assignee_summary, creator_summary, terms_summary ].compact.to_sentence
   end
 
   private
+    def project_summary
+      if names = projects.pluck(:name).presence
+        "in #{names.to_choice_sentence}"
+      end
+    end
+
     def index_summary
       unless indexed_by.all?
         indexed_by.humanize

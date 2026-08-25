@@ -13,6 +13,7 @@ module Filter::Params
     creator_ids: [],
     closer_ids: [],
     board_ids: [],
+    project_ids: [],
     tag_ids: [],
     terms: []
   ]
@@ -38,11 +39,11 @@ module Filter::Params
   end
 
   included do
-    before_save { self.params_digest = self.class.digest_params(as_params) }
+    before_save { self.params_digest = self.class.digest_params(params_for_digest) }
   end
 
   def used?(ignore_boards: false)
-    tags.any? || assignees.any? || creators.any? || closers.any? ||
+    tags.any? || filtering_by_projects? || assignees.any? || creators.any? || closers.any? ||
       terms.any? || card_ids&.any? || (!ignore_boards && boards.present?) ||
       assignment_status.unassigned? || !indexed_by.all? || !sorted_by.latest?
   end
@@ -58,7 +59,8 @@ module Filter::Params
       params[:assignment_status] = assignment_status
       params[:terms]             = terms
       params[:tag_ids]           = tags.ids
-      params[:board_ids]    = boards.ids
+      params[:board_ids]         = boards.ids
+      params[:project_ids]       = projects.ids
       params[:card_ids]          = card_ids
       params[:assignee_ids]      = assignees.ids
       params[:creator_ids]       = creators.ids
@@ -78,6 +80,11 @@ module Filter::Params
   end
 
   def params_digest
-    super.presence || self.class.digest_params(as_params)
+    super.presence || self.class.digest_params(params_for_digest)
   end
+
+  private
+    def params_for_digest
+      as_params.merge(project_ids: project_ids)
+    end
 end

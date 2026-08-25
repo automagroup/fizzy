@@ -1,5 +1,5 @@
 class Project < ApplicationRecord
-  include Colored
+  include Colored, Filterable
 
   belongs_to :account, default: -> { board.account }
   belongs_to :board, touch: true

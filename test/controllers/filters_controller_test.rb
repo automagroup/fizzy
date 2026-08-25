@@ -12,7 +12,8 @@ class FiltersControllerTest < ActionDispatch::IntegrationTest
         assignment_status: "unassigned",
         tag_ids: [ tags(:mobile).id ],
         assignee_ids: [ users(:jz).id ],
-        board_ids: [ boards(:writebook).id ] }, as: :turbo_stream
+        board_ids: [ boards(:writebook).id ],
+        project_ids: [ projects(:website_redesign).id ] }, as: :turbo_stream
     end
     assert_response :success
 
@@ -22,6 +23,7 @@ class FiltersControllerTest < ActionDispatch::IntegrationTest
     assert_equal [ tags(:mobile) ], filter.tags
     assert_equal [ users(:jz) ], filter.assignees
     assert_equal [ boards(:writebook) ], filter.boards
+    assert_equal [ projects(:website_redesign) ], filter.projects
   end
 
   test "destroy" do

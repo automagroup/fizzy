@@ -10,9 +10,11 @@ class Filter < ApplicationRecord
     end
 
     def remember(attrs)
-      create!(attrs)
+      filter = build(attrs)
+      filter.save!
+      filter
     rescue ActiveRecord::RecordNotUnique
-      find_by_params(attrs).tap(&:touch)
+      find_by!(params_digest: filter.params_digest).tap(&:touch)
     end
   end
 
@@ -28,6 +30,7 @@ class Filter < ApplicationRecord
       result = result.assigned_to(assignees.ids) if assignees.present?
       result = result.where(creator_id: creators.ids) if creators.present?
       result = filter_boards(result) if boards.present?
+      result = result.where(project_id: projects.select(:id)) if filtering_by_projects?
       result = result.tagged_with(tags.ids) if tags.present?
       result = result.where(cards: { created_at: creation_window }) if creation_window
       result = result.closed_at_window(closure_window) if closure_window
@@ -42,7 +45,7 @@ class Filter < ApplicationRecord
   end
 
   def empty?
-    self.class.normalize_params(as_params).blank?
+    self.class.normalize_params(params_for_digest).blank?
   end
 
   def single_board

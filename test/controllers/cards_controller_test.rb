@@ -7,7 +7,10 @@ class CardsControllerTest < ActionDispatch::IntegrationTest
 
   test "index" do
     get cards_path
+
     assert_response :success
+    assert_select "template input[name='project_ids[]']"
+    assert_select "[data-multi-selection-combobox-value=?]", projects(:website_redesign).id, text: projects(:website_redesign).name
   end
 
   test "filtered index" do
@@ -27,6 +30,13 @@ class CardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_equal [ cards(:logo).number, cards(:layout).number, cards(:text).number ].sort, @response.parsed_body.pluck("number").sort
+  end
+
+  test "index as JSON can filter by project id" do
+    get cards_path(format: :json), params: { project_ids: [ projects(:website_redesign).id ] }
+    assert_response :success
+
+    assert_equal [ cards(:logo).number, cards(:layout).number ], @response.parsed_body.pluck("number")
   end
 
   test "index as JSON can filter by maybe index" do

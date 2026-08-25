@@ -20,6 +20,9 @@ class FilterTest < ActiveSupport::TestCase
     filter = users(:david).filters.new assignment_status: "unassigned", board_ids: [ @new_board.id ]
     assert_equal [ @new_card ], filter.cards
 
+    filter = users(:david).filters.new project_ids: [ projects(:website_redesign).id ]
+    assert_equal [ cards(:logo), cards(:layout) ], filter.cards
+
     filter = users(:david).filters.new indexed_by: "closed"
     assert_equal [ cards(:shipping) ], filter.cards
 
@@ -48,6 +51,24 @@ class FilterTest < ActiveSupport::TestCase
     assert_empty users(:david).filters.new(board_ids: [ boards(:writebook).id ]).boards
   end
 
+  test "can't see or save projects in boards that aren't accessible" do
+    filter = users(:david).filters.create!(tag_ids: [ tags(:mobile).id ], project_ids: [ projects(:mobile_launch).id ])
+
+    assert_empty filter.projects
+    assert_empty filter.reload.project_ids
+  end
+
+  test "project filter remains restrictive after access is revoked" do
+    filter = users(:david).filters.create!(project_ids: [ projects(:website_redesign).id ])
+    boards(:private).accesses.grant_to users(:david)
+    boards(:private).cards.create!(status: "published", creator: users(:kevin))
+
+    boards(:writebook).update! all_access: false
+    boards(:writebook).accesses.revoke_from users(:david)
+
+    assert_empty filter.reload.cards
+  end
+
   test "board-scoped cards never leak cards from an inaccessible board in the same account" do
     inaccessible_card = boards(:private).cards.create!(status: "published", creator: users(:kevin))
 
@@ -67,6 +88,14 @@ class FilterTest < ActiveSupport::TestCase
     end
   end
 
+  test "remembering an equivalent filter ignores inaccessible projects" do
+    filter = users(:david).filters.remember(tag_ids: [ tags(:mobile).id ])
+
+    assert_no_difference "Filter.count" do
+      assert_equal filter, users(:david).filters.remember(tag_ids: [ tags(:mobile).id ], project_ids: [ projects(:mobile_launch).id ])
+    end
+  end
+
   test "remembering equivalent filters for different users" do
     assert_difference "Filter.count", +2 do
       users(:david).filters.remember(assignment_status: "unassigned", tag_ids: [ tags(:mobile).id ])
@@ -75,8 +104,8 @@ class FilterTest < ActiveSupport::TestCase
   end
 
   test "turning into params" do
-    filter = users(:david).filters.new sorted_by: "latest", tag_ids: "", assignee_ids: [ users(:jz).id ], board_ids: [ boards(:writebook).id ]
-    expected = { assignee_ids: [ users(:jz).id ], board_ids: [ boards(:writebook).id ] }
+    filter = users(:david).filters.new sorted_by: "latest", tag_ids: "", assignee_ids: [ users(:jz).id ], board_ids: [ boards(:writebook).id ], project_ids: [ projects(:website_redesign).id ]
+    expected = { assignee_ids: [ users(:jz).id ], board_ids: [ boards(:writebook).id ], project_ids: [ projects(:website_redesign).id ] }
     assert_equal expected, filter.as_params
   end
 
@@ -108,6 +137,29 @@ class FilterTest < ActiveSupport::TestCase
     end
   end
 
+  test "project removal updates saved filters" do
+    project = boards(:writebook).projects.create!(name: "Launch", due_on: 1.month.from_now, color: "var(--color-card-1)")
+    filter = users(:david).filters.create!(tag_ids: [ tags(:mobile).id ], project_ids: [ project.id ])
+
+    assert_changes "filter.reload.updated_at" do
+      project.destroy!
+    end
+
+    assert_empty filter.reload.projects
+    assert_equal [ tags(:mobile) ], filter.tags
+  end
+
+  test "project removal preserves inaccessible projects in saved filters" do
+    boards(:private).accesses.grant_to users(:david)
+    filter = users(:david).filters.create!(project_ids: [ projects(:website_redesign).id, projects(:mobile_launch).id ])
+    boards(:private).accesses.revoke_from users(:david)
+
+    projects(:website_redesign).destroy!
+
+    assert_equal [ projects(:mobile_launch).id ], filter.reload.project_ids
+    assert_empty filter.cards
+  end
+
   test "duplicate filters are removed after a resource is destroyed" do
     users(:david).filters.create! tag_ids: [ tags(:mobile).id ], board_ids: [ boards(:writebook).id ]
     users(:david).filters.create! tag_ids: [ tags(:mobile).id, tags(:web).id ], board_ids: [ boards(:writebook).id ]
@@ -125,6 +177,9 @@ class FilterTest < ActiveSupport::TestCase
 
     filters(:jz_assignments).update!(indexed_by: "stalled", sorted_by: "latest")
     assert_equal "Stalled", filters(:jz_assignments).summary
+
+    filter = users(:david).filters.new(project_ids: [ projects(:website_redesign).id ])
+    assert_equal "in Website redesign", filter.summary
   end
 
   test "get a clone with some changed params" do
@@ -172,6 +227,7 @@ class FilterTest < ActiveSupport::TestCase
 
   test "check if a filter is used" do
     assert users(:david).filters.new(creator_ids: [ users(:david).id ]).used?
+    assert users(:david).filters.new(project_ids: [ projects(:website_redesign).id ]).used?
     assert_not users(:david).filters.new.used?
 
     assert users(:david).filters.new(board_ids: [ boards(:writebook).id ]).used?

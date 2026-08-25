@@ -20,6 +20,10 @@ class User::Filtering
     filter.boards_label
   end
 
+  def projects
+    @projects ||= Project.where(board: user.boards).chronologically
+  end
+
   def tags
     @tags ||= account.tags.all.alphabetically
   end
@@ -67,6 +71,10 @@ class User::Filtering
 
   def show_boards?
     filter.boards.any?
+  end
+
+  def show_projects?
+    filter.projects.any?
   end
 
   def single_board_or_first
