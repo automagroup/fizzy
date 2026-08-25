@@ -21,6 +21,14 @@ class BoardsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".card-project-badge--project[data-turbo-frame=project_panel]", text: projects(:website_redesign).name
   end
 
+  test "show only lists projects from the current board" do
+    get board_path(boards(:writebook))
+
+    assert_response :success
+    assert_select "[data-multi-selection-combobox-value='#{projects(:website_redesign).id}']", text: projects(:website_redesign).name
+    assert_select "[data-multi-selection-combobox-value='#{projects(:mobile_launch).id}']", count: 0
+  end
+
   test "invalidates page title cache when account updates" do
     get board_path(boards(:writebook))
     etag = response.headers["ETag"]

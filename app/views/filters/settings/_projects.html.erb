@@ -1,5 +1,5 @@
 <% filter = user_filtering.filter %>
-<% projects = user_filtering.projects.load %>
+<% projects = @board ? @board.projects.chronologically.load : user_filtering.projects.load %>
 <% selected_projects = filter.projects.load %>
 
 <%= tag.div class: "quick-filter",
